@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="http://lh3.googleusercontent.com/d/18n1lhoim4A9UBJw3KfXlYiHcKdqQI7JI">
+    <title>7KAIH MENTAS21</title>
+    <style>
+        /* Mengimpor font modern dari Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        /* Variabel CSS untuk tema warna yang konsisten */
+        :root {
+            --primary-color: #8A2BE2; /* Biru Violet */
+            --primary-hover-color: #4A00E0; /* Ungu Cerah */
+            --background-color: #f0f2f5;
+            --container-bg-color: #ffffff;
+            --text-color: #333;
+            --subtle-text-color: #555;
+            --border-color: #ddd;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            /* Latar belakang gradien animasi */
+            background: linear-gradient(-45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888, #9a179b, #7724b3, #582fc8);
+            background-size: 400% 400%;
+            animation: gradientBG 18s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Kontainer utama yang menampung dua kolom */
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            min-height: 580px;
+            background-color: var(--container-bg-color);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Bagian formulir (kiri) */
+        .form-section {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        /* Animasi masuk untuk elemen form */
+        .login-container > * {
+            animation: slideUp 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+        }
+        .login-container h2 { animation-delay: 0.1s; }
+        .login-container p { animation-delay: 0.2s; }
+        .login-container form .input-group:nth-of-type(1) { animation-delay: 0.3s; }
+        .login-container form .input-group:nth-of-type(2) { animation-delay: 0.4s; }
+        .login-container form .input-group:nth-of-type(3) { animation-delay: 0.5s; }
+        .login-container form button { animation-delay: 0.6s; }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: 2.2em;
+        }
+
+        .login-container p {
+            margin-bottom: 30px;
+            color: var(--subtle-text-color);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--subtle-text-color);
+            font-size: 0.9em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover-color));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 0, 224, 0.3);
+            transform: translateY(0);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(74, 0, 224, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(74, 0, 224, 0.3);
+        }
+
+        button:disabled {
+            background: #c3a1e1;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .password-wrapper input { padding-right: 45px; }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* Bagian informasi (kanan) */
+        .info-section {
+            flex: 1;
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-hover-color));
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            animation: slideInFromRight 1s ease-in-out;
+        }
+        
+        @keyframes slideInFromRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .info-content {
+            max-width: 350px;
+        }
+
+        /* GAYA UNTUK JUDUL SEKOLAH & IKON WA (DITAMBAHKAN) */
+        .school-title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* Jarak antara judul dan ikon */
+            margin-bottom: 15px;
+        }
+
+        .info-content h3 {
+            font-size: 1.7em;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .whatsapp-icon {
+            display: none; /* Sembunyikan default, tampil via JS */
+            line-height: 0; /* Menghilangkan spasi ekstra di sekitar SVG */
+        }
+
+        .whatsapp-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: #ffffff;
+            transition: transform 0.2s ease-in-out;
+        }
+        .whatsapp-icon:hover svg {
+            transform: scale(1.15);
+        }
+
+        .info-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .info-logo {
+            display: none;
+            max-width: 250px;
+            max-height: 250px;
+            object-fit: contain;
+            margin-bottom: 30px;
+            margin: 0 auto 30px; 
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Gaya untuk Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #fefefe; margin: 15% auto; padding: 30px; border: none; width: 90%; max-width: 400px; border-radius: 10px; text-align: center; animation: zoomIn 0.3s; }
+        @keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-content h3 { margin-top: 0; font-size: 1.5em; color: var(--text-color); }
+        .modal-content .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; transition: color 0.3s; }
+        .modal-content .close:hover, .modal-content .close:focus { color: black; text-decoration: none; cursor: pointer; }
+        #messageModalButtons { margin-top: 20px; }
+        #messageModalButtons button {
+            background: var(--primary-color);
+            padding: 10px 30px;
+            width: auto;
+            box-shadow: none;
+        }
+        #messageModalButtons button:hover {
+             background: var(--primary-hover-color);
+             transform: translateY(-2px);
+        }
+
+        .loader { font-size: 12px; color: var(--primary-color); text-align: right; height: 15px; font-weight: 600; }
+
+        /* Desain Responsif */
+        @media (max-width: 850px) {
+            .main-container {
+                flex-direction: column;
+                min-height: auto;
+                max-width: 500px;
+            }
+            .info-section {
+                display: none; 
+            }
+             .form-section {
+                padding: 40px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="form-section">
+            <div class="login-container">
+                <h2>Selamat Datang!</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required placeholder="Masukkan Username/Nama Siswa">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" name="password" required placeholder="Masukkan Password/No. Induk">
+                            <span class="toggle-password" onclick="togglePasswordVisibility('password', this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8-5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>
+                            </span>
+                        </div>
+                         <div id="name-loader" class="loader"></div>
+                    </div>
+                    <div class="input-group">
+                        <label for="role">Login Sebagai</label>
+                        <select id="role" name="role" required>
+                            <option value="Siswa">Siswa</option>
+                            <option value="Guru">Guru</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="loginButton">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-content">
+                <img id="schoolLogo" class="info-logo" alt="Logo Sekolah" onerror="this.style.display='none'">
+
+                <div class="school-title-container">
+                    <h3 id="schoolNameHeading">7 KEBIASAAN ANAK HEBAT</h3>
+
+                </div>
+
+                <p>Platform terintegrasi untuk mengelola semua aktivitas akademik Anda dengan mudah dan efisien.</p>
+
+                    <a href="#" id="whatsappLink" class="whatsapp-icon" target="_blank" title="Hubungi Admin">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.35 3.45 16.86L2.05 22L7.31 20.59C8.75 21.36 10.36 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 9.27 20.92 6.83 19.05 4.96C17.18 3.08 14.73 2 12.04 2ZM12.04 3.62C14.24 3.62 16.23 4.44 17.76 5.97C19.29 7.5 20.11 9.5 20.11 11.7C20.11 16.42 16.48 20.05 11.83 20.05C10.31 20.05 8.86 19.64 7.64 18.91L7.22 18.66L4.31 19.51L5.18 16.7L4.91 16.27C4.12 15 3.75 13.48 3.75 11.91C3.75 7.26 7.38 3.62 12.04 3.62ZM9.03 7.29C8.84 7.29 8.62 7.33 8.41 7.7C8.2 8.07 7.58 8.65 7.58 9.91C7.58 11.17 8.44 12.39 8.59 12.58C8.74 12.77 10.03 14.82 12.08 15.62C13.78 16.28 14.12 16.14 14.48 16.1C14.84 16.06 15.69 15.61 15.88 15.06C16.08 14.51 16.08 14.05 16.01 13.95C15.93 13.85 15.74 13.8 15.5 13.56C15.26 13.32 14.51 12.95 14.27 12.86C14.03 12.76 13.84 12.71 13.65 12.95C13.46 13.19 13.01 13.71 12.86 13.88C12.71 14.05 12.57 14.07 12.33 13.98C12.09 13.88 11.11 13.56 9.94 12.53C9.01 11.71 8.39 10.7 8.27 10.46C8.14 10.22 8.26 10.1 8.38 9.98C8.49 9.88 8.62 9.7 8.74 9.55C8.86 9.41 8.91 9.29 9.01 9.1C9.1 8.91 9.06 8.74 8.98 8.59C8.91 8.44 8.46 7.29 8.27 7.29H8.27Z" fill-rule="evenodd"></path></svg>
+                    </a>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="messageModalTitle">Pemberitahuan</h3>
+            <p id="messageModalText"></p>
+            <div id="messageModalButtons">
+                 <button onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz9PNU-dfHJc41xpR1AbNZFP55_YZ7vwnHIHzbFYOAulObbyVOLfr3UygydWVrWl8PR/exec'; 
+        const form = document.getElementById('loginForm');
+        const loginButton = document.getElementById('loginButton');
+        const messageModal = document.getElementById('messageModal');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const roleSelect = document.getElementById('role');
+        const nameLoader = document.getElementById('name-loader');
+        let onModalConfirm = null;
+
+        // FUNGSI INI SEKARANG MEMUAT SEMUA INFO SEKOLAH (DIPERBARUI)
+        function loadSchoolInfo() {
+            const logoElement = document.getElementById('schoolLogo');
+            const nameElement = document.getElementById('schoolNameHeading');
+            const whatsappLink = document.getElementById('whatsappLink');
+
+            fetch(`${scriptURL}?action=getGlobalSettings`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success' && result.data.schoolInfo) {
+                        const info = result.data.schoolInfo;
+
+                        // 1. Muat Logo
+                        if (info['Url Logo Sekolah']) {
+                            logoElement.src = info['Url Logo Sekolah'];
+                            logoElement.style.display = 'block';
+                        }
+
+                        // 2. Muat Nama Sekolah
+                        if (info['NAMA Sekolah']) {
+                            nameElement.textContent = info['NAMA Sekolah'];
+                        }
+
+                        // 3. Muat Link WhatsApp Admin
+                        if (info['Nomor HP Admin']) {
+                            let phone = String(info['Nomor HP Admin']).trim().replace(/[^0-9]/g, '');
+                            if (phone.startsWith('0')) {
+                                phone = '62' + phone.substring(1);
+                            }
+                            whatsappLink.href = `https://wa.me/${phone}`;
+                            whatsappLink.style.display = 'inline-block';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Gagal memuat info sekolah:', error);
+                });
+        }
+
+        function setupFormForRole(role) {
+            if (role === 'Siswa') {
+                usernameInput.placeholder = 'Nama akan terisi otomatis';
+                usernameInput.readOnly = true;
+                usernameInput.value = '';
+                nameLoader.textContent = '';
+            } else {
+                usernameInput.placeholder = 'Masukkan Username';
+                usernameInput.readOnly = false;
+                usernameInput.value = '';
+                nameLoader.textContent = '';
+            }
+        }
+        
+        roleSelect.addEventListener('change', (e) => {
+            setupFormForRole(e.target.value);
+        });
+
+        passwordInput.addEventListener('blur', () => {
+            const noInduk = passwordInput.value;
+            if (roleSelect.value === 'Siswa' && noInduk) {
+                nameLoader.textContent = 'Mencari nama...';
+                usernameInput.value = '';
+                fetch(`${scriptURL}?action=getSiswaNameByInduk&induk=${noInduk}`)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 'success') {
+                            usernameInput.value = result.nama;
+                            nameLoader.textContent = 'Nama ditemukan!';
+                        } else {
+                            nameLoader.textContent = 'No. Induk tidak ditemukan.';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching name:', error);
+                        nameLoader.textContent = 'Gagal terhubung ke server.';
+                    });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupFormForRole(roleSelect.value);
+            loadSchoolInfo(); // Panggil fungsi baru untuk memuat semua info sekolah
+        });
+        
+        function showMessage(message, title = 'Pemberitahuan', onConfirm = null) {
+            document.getElementById('messageModalTitle').textContent = title;
+            document.getElementById('messageModalText').textContent = message;
+            onModalConfirm = onConfirm;
+            messageModal.style.display = 'block';
+        }
+
+        function closeModal() {
+            messageModal.style.display = 'none';
+            if (onModalConfirm) {
+                onModalConfirm();
+                onModalConfirm = null; 
+            }
+        }
+        
+        window.onclick = event => {
+            if (event.target == messageModal) {
+                closeModal();
+            }
+        }
+
+        function togglePasswordVisibility(inputId, iconElement) {
+            const passwordInput = document.getElementById(inputId);
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            iconElement.innerHTML = type === 'password' 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8-5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>` 
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16"><path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/><path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z"/></svg>`;
+        }
+        
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            if (roleSelect.value === 'Siswa' && !usernameInput.value) {
+                showMessage('Nama siswa belum terisi. Pastikan No. Induk benar dan tunggu nama muncul.', 'Peringatan');
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginButton.textContent = 'Memproses...';
+
+            const data = {
+                action: 'login',
+                username: form.username.value,
+                password: form.password.value,
+                role: form.role.value
+            };
+
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(data) })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        sessionStorage.clear(); // Clear any previous session
+
+                        if (result.role === 'Admin') {
+                            sessionStorage.setItem('isAdminLoggedIn', 'true');
+                            sessionStorage.setItem('guruName', result.guruName);
+                            sessionStorage.setItem('guruNip', result.guruNip);
+                        } else if (result.role === 'Siswa') {
+                            sessionStorage.setItem('isSiswaLoggedIn', 'true');
+                            sessionStorage.setItem('nomorIndukSiswa', form.password.value);
+                        } else if (result.role === 'Guru') {
+                            sessionStorage.setItem('isGuruLoggedIn', 'true');
+                            sessionStorage.setItem('guruKelas', result.kelas);
+                            sessionStorage.setItem('guruName', result.guruName);
+                            sessionStorage.setItem('guruNip', result.guruNip);
+                        }
+                        
+                        showMessage('Login berhasil! Anda akan diarahkan...', 'Sukses', () => {
+                            window.location.href = result.url;
+                        });
+                    } else {
+                        showMessage(result.message, 'Login Gagal');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    showMessage('Terjadi kesalahan. Coba lagi nanti.', 'Error');
+                })
+                .finally(() => {
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Login';
+                });
+        });
+    </script>
+</body>
+</html>

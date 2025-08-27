@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="http://lh3.googleusercontent.com/d/18n1lhoim4A9UBJw3KfXlYiHcKdqQI7JI">
+    <title>ADMIN</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        /* CSS Variables for easier theme management */
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --text-color: #495057;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 12px;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        /* General Body Styles */
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { margin: 0; font-weight: 600; }
+
+        /* Navigation Bar */
+        .nav {
+            background-color: var(--dark-color);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 5px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        .nav-link {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 20px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 3px solid transparent;
+        }
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-bottom-color: var(--primary-hover);
+        }
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: var(--card-bg);
+            border-bottom-color: var(--primary-color);
+        }
+        #logoutButton {
+            margin-left: auto;
+        }
+
+        /* Main Container and Content Tabs */
+        .container { padding: 25px; }
+        .content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        #infoSekolah { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Headings */
+        h2 {
+            color: var(--primary-hover);
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        h3 {
+            margin: 0;
+            color: var(--dark-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+        }
+        h3 .fas { 
+            color: var(--primary-color); 
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        /* Tables */
+        .table-wrapper {
+            max-height: 70vh;
+            overflow: auto;
+            position: relative;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            font-weight: 600;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) { background-color: var(--light-color); }
+        tr:hover { background-color: #e9ecef; }
+
+        /* Buttons */
+        button, .btn-download {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            margin-right: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        button:hover, .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        button:disabled {
+            background-color: var(--secondary-color);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-edit { background-color: var(--warning-color); }
+        .btn-delete { background-color: var(--danger-color); }
+        .btn-add { background-color: var(--success-color); margin-bottom: 20px; font-size: 16px; }
+        .btn-download { background-color: var(--info-color); text-decoration: none; }
+
+        /* Controls and Filters */
+        .controls-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-container {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-grow: 1;
+            flex-wrap: wrap;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .filter-container input[type="text"], .filter-container select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .filter-container input[type="text"]:focus, .filter-container select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+        .filter-container label { font-weight: 600; color: var(--dark-color); }
+        
+        /* Info & Settings Cards */
+        .settings-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .info-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-color);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .info-item:last-child { border-bottom: none; }
+        .info-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            width: 200px;
+            flex-shrink: 0;
+        }
+        .info-logo {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .profile-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .profile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .btn-edit-profile {
+            background-color: var(--warning-color);
+            padding: 8px 12px;
+            margin: 0;
+        }
+        .profile-card-body {
+            padding: 25px;
+            padding-top: 15px;
+        }
+
+        /* --- MODAL STYLES REWORKED --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 5% auto;
+            padding: 0; /* Changed padding */
+            border: none; /* Changed border */
+            width: 90%;
+            max-width: 700px; /* Increased width for 2 columns */
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden; /* Hide overflowing content from header */
+        }
+        #formModal .modal-content {
+             max-width: 800px;
+        }
+        
+        #modalTitle {
+            padding: 20px 25px;
+            background-color: var(--light-color);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-hover);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        #dataForm {
+            padding: 25px;
+        }
+
+        #formFields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 25px; /* row-gap column-gap */
+        }
+        
+        /* This CSS magic makes the last item span both columns IF it's an odd-numbered item (like the 5th item) */
+        #formFields .form-group:last-child:nth-child(odd) {
+            grid-column: 1 / -1;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        
+        .modal-content .close {
+            color: var(--secondary-color);
+            position: absolute; /* Position relative to modal-content */
+            top: 22px;
+            right: 25px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .modal-content .close:hover { 
+            color: var(--danger-color); 
+            transform: rotate(90deg);
+        }
+        
+        #messageModal .modal-content { text-align: center; padding: 25px; }
+        #messageModalButtons { margin-top: 20px; display: flex; justify-content: center; gap: 10px;}
+        
+        /* Form Styles */
+        .form-group { margin: 0; text-align: left; } /* Changed margin */
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .form-group input, .form-group select, .form-group textarea { /* --- PERUBAHAN DIMULAI --- Menambahkan textarea */
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-family: var(--font-family); /* --- PERUBAHAN DIMULAI --- Menambahkan font-family */
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { /* --- PERUBAHAN DIMULAI --- Menambahkan textarea */
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-wrapper input { padding-right: 40px; }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* Grid Layout */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        /* Specific Component Styles */
+        .ibadah-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .ibadah-checkbox-grid div {
+            display: flex;
+            align-items: center;
+            background-color: var(--light-color);
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+         .ibadah-checkbox-grid div:hover { background-color: #e2e6ea; }
+        .ibadah-checkbox-grid input {
+            width: auto;
+            transform: scale(1.2);
+            margin-right: 12px;
+            accent-color: var(--primary-color);
+        }
+        .title-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .title-container h2 {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+        .settings-separator {
+            margin: 25px 0;
+            border: none;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* --- PERUBAHAN DIMULAI --- */
+        .dropdown-options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .dropdown-options-grid .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        /* --- PERUBAHAN SELESAI --- */
+
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav { justify-content: flex-start; }
+            #logoutButton {
+                position: absolute;
+                top: 5px; right: 10px;
+                padding: 10px 15px;
+            }
+            .filter-container { flex-direction: column; align-items: stretch; }
+            .controls-container { flex-direction: column; align-items: stretch; gap: 10px;}
+            .title-container { flex-direction: column; align-items: flex-start; }
+            th, td { padding: 10px; }
+            .header { padding: 15px; }
+            .container { padding: 15px; }
+
+            /* Make modal form 1 column on small screens */
+            #formFields {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header"><h1><i class="fas fa-user-shield"></i> Dashboard Admin</h1></div>
+    <div class="nav">
+        <button class="nav-link active tab-button" onclick="openTab(event, 'infoSekolah')"><i class="fas fa-info-circle"></i> Informasi & Pengaturan</button>
+        <button class="nav-link tab-button" onclick="openTab(event, 'manajemenGuru')"><i class="fas fa-chalkboard-teacher"></i> Data Guru</button>
+        <button class="nav-link tab-button" onclick="openTab(event, 'manajemenSiswa')"><i class="fas fa-user-graduate"></i> Data Siswa</button>
+        <button class="nav-link tab-button" onclick="openTab(event, 'rekapKelas')"><i class="fas fa-chart-pie"></i> Rekapitulasi</button>
+        <a href="#" id="logoutButton" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="container">
+        <div id="infoSekolah" class="content">
+             <div class="title-container">
+                <h2>Informasi & Pengaturan</h2>
+            </div>
+            <div class="grid-container">
+                <div class="profile-card">
+                    <div class="profile-card-header">
+                        <h3><i class="fas fa-school"></i> Profil Sekolah</h3>
+                        <button class="btn-edit-profile" onclick="showSchoolModal()"><i class="fas fa-edit"></i> Edit</button>
+                    </div>
+                    <div class="profile-card-body" id="schoolInfoContainer">
+                        <p>Memuat data sekolah...</p>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-database"></i> Backup & Restore Data</h3>
+                    <p>Simpan semua data sistem (Admin, Guru, Siswa, dan semua rekap kelas) ke dalam satu file. Anda dapat memulihkannya kapan saja.</p>
+                    
+                    <button class="btn-add" style="width:100%; background-color: var(--info-color);" onclick="backupData(this)"><i class="fas fa-download"></i> Backup Semua Data</button>
+
+                    <hr class="settings-separator">
+
+                     <h4 style="font-weight: 500; margin-bottom: 10px;"><i class="fas fa-upload" style="margin-right: 10px; font-size: 1rem; color: var(--text-color);"></i>Pulihkan Data</h4>
+                    <p style="color: var(--danger-color); font-weight: 500;">PERINGATAN: Memulihkan data akan MENGHAPUS dan MENGGANTI semua data yang ada saat ini dengan data dari file backup.</p>
+                    <div class="form-group">
+                        <label for="restoreFile">Pilih File Backup (.json):</label>
+                        <input type="file" id="restoreFile" accept=".json" style="padding: 5px;">
+                    </div>
+                    <button class="btn-add" style="width:100%; background-color: var(--danger-color); margin-top: auto;" onclick="restoreData(this)"><i class="fas fa-cloud-upload-alt"></i> Pulihkan Sekarang</button>
+                </div>
+                
+                <div class="settings-card">
+                    <h3><i class="fas fa-award"></i> Pengaturan Predikat</h3>
+                    <div class="form-group">
+                        <label>Predikat Tertinggi (Teks)</label>
+                        <input type="text" id="predikatTaatText" placeholder="misal: Taat">
+                    </div>
+                    <div class="form-group">
+                         <label>Ambang Batas Nilai (di atas %)</label>
+                        <input type="number" id="predikatTaatValue" min="0" max="100" placeholder="misal: 85">
+                    </div>
+                     <div class="form-group">
+                        <label>Predikat Menengah (Teks)</label>
+                        <input type="text" id="predikatTerbiasaText" placeholder="misal: Terbiasa">
+                    </div>
+                    <div class="form-group">
+                        <label>Ambang Batas Nilai (di atas %)</label>
+                        <input type="number" id="predikatTerbiasaValue" min="0" max="100" placeholder="misal: 70">
+                    </div>
+                    <div class="form-group">
+                        <label>Predikat Terendah (Teks)</label>
+                        <input type="text" id="predikatKurangText" placeholder="misal: Perlu Pembiasaan">
+                    </div>
+                    <button class="btn-add" style="width:100%; margin-top: auto;" onclick="savePredikatSettings()"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3><i class="fas fa-mosque"></i> Pengaturan Ibadah & Waktu</h3>
+                    
+                    <p>Pilih ibadah yang akan dihitung dalam penilaian. Jumlah yang diceklis akan menjadi syarat minimum poin agar ibadah dianggap tuntas.</p>
+                    <div class="form-group ibadah-checkbox-grid" id="ibadahSettingsContainer"></div>
+                    <button class="btn-add" style="width:100%;" onclick="saveIbadahSettings()"><i class="fas fa-save"></i> Simpan Pengaturan Ibadah</button>
+
+                    <hr class="settings-separator">
+
+                    <h4 style="font-weight: 500; margin-bottom: 10px;"><i class="fas fa-clock" style="margin-right: 10px; font-size: 1rem; color: var(--text-color);"></i>Batas Waktu Aktivitas</h4>
+                    <p>Atur batas waktu maksimal untuk mendapatkan skor.</p>
+                    <div class="form-group">
+                        <label for="batasBangunPagi">Batas Waktu Bangun Pagi</label>
+                        <input type="time" id="batasBangunPagi">
+                    </div>
+                    <div class="form-group">
+                        <label for="batasTidurCepat">Batas Waktu Tidur Cepat</label>
+                        <input type="time" id="batasTidurCepat">
+                    </div>
+                    <button class="btn-add" style="width:100%;" onclick="saveWaktuSettings()"><i class="fas fa-save"></i> Simpan Pengaturan Waktu</button>
+                </div>
+
+                <div class="settings-card" style="grid-column: 1 / -1;">
+                    <h3><i class="fas fa-list-alt"></i> Pengaturan Opsi Dropdown Ibadah</h3>
+                    <p>Masukkan setiap pilihan pada baris baru. Pilihan ini akan muncul di formulir harian siswa.</p>
+                    <div class="dropdown-options-grid">
+                        <div class="form-group">
+                            <label for="opsiIbadah1">Opsi untuk Ibadah 1</label>
+                            <textarea id="opsiIbadah1" placeholder="Subuh&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="opsiIbadah2">Opsi untuk Ibadah 2</label>
+                            <textarea id="opsiIbadah2" placeholder="Dzuhur&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="opsiIbadah3">Opsi untuk Ibadah 3</label>
+                            <textarea id="opsiIbadah3" placeholder="Ashar&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="opsiIbadah4">Opsi untuk Ibadah 4</label>
+                            <textarea id="opsiIbadah4" placeholder="Maghrib&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="opsiIbadah5">Opsi untuk Ibadah 5</label>
+                            <textarea id="opsiIbadah5" placeholder="Isya&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="opsiIbadah6">Opsi untuk Ibadah 6</label>
+                            <textarea id="opsiIbadah6" placeholder="Tadarus&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="opsiIbadah7">Opsi untuk Ibadah 7</label>
+                            <textarea id="opsiIbadah7" placeholder="Tahajud&#10;Berdoa&#10;Tidak"></textarea>
+                        </div>
+                    </div>
+                    <button class="btn-add" style="width:100%; margin-top: auto;" onclick="saveIbadahDropdowns(this)"><i class="fas fa-save"></i> Simpan Opsi Ibadah</button>
+                </div>
+                </div>
+        </div>
+
+
+        <div id="manajemenGuru" class="content">
+            <div class="title-container"><h2>Manajemen Data Admin & Guru</h2></div>
+            <div class="controls-container">
+                <button class="btn-add" onclick="showUserModal('adminGuru')"><i class="fas fa-user-plus"></i> Tambah Data Admin/Guru</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="tabelAdminGuru">
+                    <thead><tr><th>ID</th><th>Username</th><th>NIP/Password</th><th>Nama Guru</th><th>Role</th><th>Kelas</th><th>Aksi</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="manajemenSiswa" class="content">
+             <div class="title-container"><h2>Manajemen Data Siswa</h2></div>
+             <div class="controls-container">
+                <button class="btn-add" onclick="showUserModal('siswa')"><i class="fas fa-plus"></i> Tambah Siswa</button>
+                <button class="btn-add" style="background-color: #1D6F42;" onclick="showUploadModal()"><i class="fas fa-file-excel"></i> Upload Excel</button>
+                <div class="filter-container">
+                    <div>
+                        <label for="searchNama">Cari Nama:</label>
+                        <input type="text" id="searchNama" onkeyup="filterSiswa()" placeholder="Ketik nama siswa...">
+                    </div>
+                    <div>
+                        <label for="filterKelas">Filter Kelas:</label>
+                        <select id="filterKelas" onchange="filterSiswa()">
+                            <option value="">Semua Kelas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="tabelSiswa">
+                    <thead><tr><th>No</th><th>Induk</th><th>Nama Siswa</th><th>Agama</th><th>Kelas</th><th>Aksi</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="rekapKelas" class="content">
+            <div class="title-container">
+                <h2>Rekapitulasi Predikat Per Kelas</h2>
+                <button class="btn-download" onclick="downloadTableAsPDF('tabelRekapKelas', 'Laporan Rekapitulasi Predikat')"><i class="fas fa-file-pdf"></i> Download PDF</button>
+            </div>
+            <div class="table-wrapper">
+                <table id="tabelRekapKelas">
+                    <thead>
+                        <tr>
+                            <th>Kelas</th><th>Beribadah</th><th>Tidur Cepat</th><th>Bangun Pagi</th>
+                            <th>Olah Raga</th><th>Belajar</th><th>Makan Bergizi</th><th>Bermasyarakat</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <div class="title-container"><h2>Rekapitulasi Sekolah</h2></div>
+            <div id="schoolRekapContainer"></div>
+
+            <div class="title-container"><h2>Grafik Perolehan Tiap Kelas</h2></div>
+            <div id="rekapChartContainer" class="grid-container"></div>
+        </div>
+    </div>
+    
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('formModal')">&times;</span>
+            <h3 id="modalTitle">Form Data</h3>
+            <form id="dataForm">
+                <input type="hidden" id="formType">
+                <input type="hidden" id="rowIndex">
+                <div id="formFields"></div>
+                <button type="submit" id="submitButton" class="btn-add" style="width:100%; margin-top: 25px; margin-right: 0;"><i class="fas fa-save"></i> Simpan</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('messageModal')">&times;</span>
+            <h3 id="messageModalTitle">Pemberitahuan</h3>
+            <p id="messageModalText"></p>
+            <div id="messageModalButtons"></div>
+        </div>
+    </div>
+
+    <div id="uploadModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+             <h3 id="uploadModalTitle" style="padding: 20px 25px; background-color: var(--light-color); border-bottom: 1px solid var(--border-color); color: var(--primary-hover); font-size: 1.4rem; font-weight: 600;"><i class="fas fa-file-upload"></i> Upload Data Siswa</h3>
+            <div style="padding: 25px;">
+                <span class="close" onclick="closeModal('uploadModal'); document.getElementById('uploadStatus').innerHTML='';">&times;</span>
+                <p>Unggah data siswa secara massal menggunakan file Excel. Silakan unduh format yang benar terlebih dahulu untuk menghindari kesalahan.</p>
+                <div class="form-group">
+                    <a href="#" id="downloadFormatButton" class="btn-download"><i class="fas fa-download"></i> Download Format Excel</a>
+                </div>
+                <div class="form-group">
+                    <label for="excelFile">Pilih File Excel (.xlsx):</label>
+                    <input type="file" id="excelFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                </div>
+                <button onclick="uploadExcel()" id="uploadButton" class="btn-add" style="width: 100%; margin-right: 0;"><i class="fas fa-upload"></i> Upload Sekarang</button>
+                <div id="uploadStatus" style="margin-top: 15px; font-weight: bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================================================================================
+        // ALL JAVASCRIPT LOGIC
+        // ===================================================================================
+        
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz9PNU-dfHJc41xpR1AbNZFP55_YZ7vwnHIHzbFYOAulObbyVOLfr3UygydWVrWl8PR/exec';
+        const formModal = document.getElementById('formModal');
+        const messageModal = document.getElementById('messageModal');
+        const uploadModal = document.getElementById('uploadModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const formFields = document.getElementById('formFields');
+        const dataForm = document.getElementById('dataForm');
+        const formTypeInput = document.getElementById('formType');
+        const rowIndexInput = document.getElementById('rowIndex');
+
+        Chart.register(ChartDataLabels);
+
+        let allSiswaData = [];
+        let allAdminGuruData = [];
+        let globalSettings = {};
+        let rekapChartInstances = [];
+        let rawRekapData = {};
+
+        window.onload = function() {
+            if (sessionStorage.getItem('isAdminLoggedIn') !== 'true') {
+                showMessage(
+                    'Anda harus login sebagai Admin untuk mengakses halaman ini.', 
+                    'Akses Ditolak', 
+                    'alert', 
+                    () => { window.location.href = './'; }
+                );
+                return;
+            }
+            loadGlobalSettings();
+            loadAllUserData();
+            loadIbadahDropdowns(); // --- PERUBAHAN DIMULAI --- Memuat opsi dropdown
+        };
+
+        // ========================================================================
+        // FUNGSI BARU: BACKUP DAN RESTORE
+        // ========================================================================
+
+        function backupData(button) {
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mem-backup...';
+
+            fetch(`${scriptURL}?action=backupAllData`)
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        const dataStr = JSON.stringify(res.data, null, 2);
+                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                        const url = window.URL.createObjectURL(dataBlob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        const date = new Date().toISOString().slice(0, 10);
+                        a.download = `backup_7KAIH_${date}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                        showMessage('Backup berhasil diunduh.', 'Sukses');
+                    } else {
+                        throw new Error(res.message);
+                    }
+                })
+                .catch(error => {
+                    showMessage(`Gagal membuat backup: ${error.message}`, 'Error');
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                });
+        }
+
+        function restoreData(button) {
+            const fileInput = document.getElementById('restoreFile');
+            if (fileInput.files.length === 0) {
+                showMessage('Silakan pilih file backup (.json) terlebih dahulu.', 'Peringatan');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    
+                    showMessage(
+                        'Anda yakin ingin memulihkan data? TINDAKAN INI AKAN MENGHAPUS SEMUA DATA LAMA DAN MENGGANTINYA DENGAN DATA DARI FILE BACKUP. Tindakan ini tidak dapat diurungkan.',
+                        'Konfirmasi Pemulihan Data',
+                        'confirm',
+                        () => { // onConfirm action
+                            const originalText = button.innerHTML;
+                            button.disabled = true;
+                            fileInput.disabled = true;
+                            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memulihkan...';
+
+                            const payload = {
+                                action: 'restoreAllData',
+                                data: jsonData
+                            };
+
+                            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                                .then(response => response.json())
+                                .then(res => {
+                                    if (res.status === 'success') {
+                                        showMessage(res.message, 'Pemulihan Berhasil', 'alert', () => {
+                                            // Muat ulang semua data untuk me-refresh tampilan
+                                            loadGlobalSettings();
+                                            loadAllUserData();
+                                        });
+                                    } else {
+                                        throw new Error(res.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    showMessage(`Gagal memulihkan data: ${error.message}`, 'Error');
+                                })
+                                .finally(() => {
+                                    button.disabled = false;
+                                    fileInput.disabled = false;
+                                    button.innerHTML = originalText;
+                                    fileInput.value = ''; // Reset file input
+                                });
+                        }
+                    );
+
+                } catch (error) {
+                    showMessage(`File backup tidak valid atau rusak: ${error.message}`, 'Error');
+                }
+            };
+            
+            reader.onerror = function() {
+                 showMessage('Gagal membaca file.', 'Error');
+            };
+
+            reader.readAsText(file);
+        }
+
+        // --- PERUBAHAN DIMULAI ---
+        // ========================================================================
+        // FUNGSI BARU: MENGELOLA DROPDOWN IBADAH
+        // ========================================================================
+        function loadIbadahDropdowns() {
+            fetch(`${scriptURL}?action=getIbadahDropdowns`)
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success' && res.data.options) {
+                        for (let i = 1; i <= 7; i++) {
+                            const textarea = document.getElementById(`opsiIbadah${i}`);
+                            // PERBAIKAN: Tambahkan .options untuk mengakses object yang benar
+                            const options = res.data.options[`ibadah${i}`] || []; // <-- DIUBAH
+                            textarea.value = options.join('\n');
+                        }
+                    } else {
+                        showMessage('Gagal memuat opsi dropdown ibadah: ' + res.message, 'Error');
+                    }
+                })
+                .catch(error => showMessage(`Error Jaringan saat memuat dropdown: ${error.message}`, 'Error'));
+        }
+
+        function saveIbadahDropdowns(button) {
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+            
+            let allOptions = [];
+            let maxRows = 0;
+
+            // Kumpulkan semua opsi dan cari jumlah baris maksimum
+            for (let i = 1; i <= 7; i++) {
+                const textarea = document.getElementById(`opsiIbadah${i}`);
+                const options = textarea.value.split('\n').map(opt => opt.trim()).filter(Boolean);
+                allOptions.push(options);
+                if (options.length > maxRows) {
+                    maxRows = options.length;
+                }
+            }
+
+            // Buat 2D array (matriks) yang ukurannya sesuai
+            const dataForSheet = [];
+            for (let r = 0; r < maxRows; r++) {
+                const row = [];
+                for (let c = 0; c < 7; c++) {
+                    // Isi dengan opsi jika ada, atau string kosong jika tidak
+                    row.push(allOptions[c][r] || '');
+                }
+                dataForSheet.push(row);
+            }
+
+            const payload = {
+                action: 'updateIbadahDropdowns',
+                data: dataForSheet
+            };
+
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        showMessage(res.message, 'Sukses');
+                    } else {
+                        throw new Error(res.message);
+                    }
+                })
+                .catch(error => showMessage(`Gagal menyimpan opsi: ${error.message}`, 'Error'))
+                .finally(() => {
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                });
+        }
+        // --- PERUBAHAN SELESAI ---
+
+        // ========================================================================
+        // FUNGSI LAMA (TIDAK DIUBAH)
+        // ========================================================================
+        
+        function downloadTableAsPDF(tableId, title) {
+            try {
+                const jsPDF = window.jspdf.jsPDF;
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const table = document.getElementById(tableId);
+                if (!table) {
+                    showMessage('Tabel tidak ditemukan!', 'Error');
+                    return;
+                }
+                if (!globalSettings.schoolInfo) {
+                    showMessage('Data sekolah belum dimuat.', 'Peringatan');
+                    return;
+                }
+
+                const schoolInfo = globalSettings.schoolInfo;
+                const namaSekolah = schoolInfo['NAMA Sekolah'] || 'Nama Sekolah';
+                const namaKepsek = schoolInfo['Nama Kepala Sekolah'] || 'Nama Kepala Sekolah';
+                const nipKepsek = schoolInfo['NIP Kepala Sekolah'] || '-';
+
+                const head = [];
+                const body = [];
+
+                const lastHeader = table.querySelector('thead th:last-child');
+                const skipLastColumn = lastHeader && lastHeader.innerText.toLowerCase() === 'aksi';
+                
+                const colCount = table.querySelectorAll('thead th').length; 
+                const endColumnIndex = skipLastColumn ? colCount - 1 : colCount;
+
+                table.querySelectorAll('thead th').forEach((th, index) => {
+                    if (index < endColumnIndex) {
+                        head.push(th.innerText);
+                    }
+                });
+
+                table.querySelectorAll('tbody tr').forEach(tr => {
+                    const rowData = [];
+                    tr.querySelectorAll('td').forEach((td, index) => {
+                        if (index < endColumnIndex) {
+                            rowData.push(td.innerText);
+                        }
+                    });
+                    body.push(rowData);
+                });
+                
+                let startY = 20;
+                const startX = 10;
+                const rowHeight = 8;
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 10;
+                const usableWidth = pageWidth - (margin * 2);
+                const colWidth = usableWidth / head.length;
+
+                doc.setFontSize(16);
+                doc.text(namaSekolah, pageWidth / 2, 10, { align: 'center' });
+                doc.setFontSize(12);
+                doc.text(title, pageWidth / 2, 16, { align: 'center' });
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.setDrawColor(0);
+                doc.setFillColor(230, 230, 230);
+                doc.rect(startX, startY, usableWidth, rowHeight, 'F');
+                head.forEach((text, i) => {
+                    const headerText = doc.splitTextToSize(String(text), colWidth - 6);
+                    doc.text(headerText, startX + (i * colWidth) + 3, startY + 5);
+                });
+                startY += rowHeight;
+
+                doc.setFont('helvetica', 'normal');
+                body.forEach((row, rowIndex) => {
+                    if (startY > doc.internal.pageSize.getHeight() - 20) {
+                        doc.addPage();
+                        startY = 15;
+                    }
+                    if(rowIndex % 2 !== 0) {
+                        doc.setFillColor(245, 245, 245);
+                        doc.rect(startX, startY, usableWidth, rowHeight, 'F');
+                    }
+                    row.forEach((text, i) => {
+                        const cellText = doc.splitTextToSize(String(text), colWidth - 6);
+                        doc.text(cellText, startX + (i * colWidth) + 3, startY + 5);
+                    });
+                    startY += rowHeight;
+                });
+
+                const finalY = startY;
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                const locationAndDate = `Jakarta, ${dateStr}`;
+                
+                let signatureY = finalY + 15;
+
+                if (signatureY > doc.internal.pageSize.getHeight() - 40) {
+                    doc.addPage();
+                    signatureY = 20;
+                }
+                
+                const signatureX = doc.internal.pageSize.getWidth() - 70;
+                doc.setFontSize(10);
+                doc.text(locationAndDate, signatureX, signatureY);
+                doc.text('Kepala Sekolah', signatureX, signatureY + 5);
+                doc.text(namaKepsek, signatureX, signatureY + 25);
+                doc.text(`NIP. ${nipKepsek}`, signatureX, signatureY + 30);
+
+                doc.save(`${title.replace(/ /g, '_')}.pdf`);
+
+            } catch (error) {
+                console.error("Gagal membuat PDF:", error);
+                showMessage("Terjadi kesalahan saat membuat PDF. Silakan cek console.", "Error");
+            }
+        }
+        
+        function showUploadModal() {
+            uploadModal.style.display = 'block';
+        }
+
+        document.getElementById('downloadFormatButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            downloadExcelFormat();
+        });
+
+        function downloadExcelFormat() {
+            const headers = ["No", "Induk", "Nama Siswa", "Agama", "Kelas"];
+            const exampleData = [
+                { "No": 1, "Induk": "12345", "Nama Siswa": "Budi Santoso", "Agama": "Islam", "Kelas": "1A" },
+                { "No": 2, "Induk": "12346", "Nama Siswa": "Ani Lestari", "Agama": "Kristen", "Kelas": "1B" }
+            ];
+            const ws = XLSX.utils.json_to_sheet(exampleData, { header: headers });
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "DataSiswa");
+            XLSX.writeFile(wb, "Format_Upload_Siswa.xlsx");
+        }
+
+        function uploadExcel() {
+            const fileInput = document.getElementById('excelFile');
+            const uploadButton = document.getElementById('uploadButton');
+            const uploadStatus = document.getElementById('uploadStatus');
+
+            if (fileInput.files.length === 0) {
+                showMessage('Silakan pilih file Excel terlebih dahulu.', 'Peringatan');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            uploadStatus.textContent = 'Membaca file...';
+            uploadButton.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, range: 1 });
+
+                    const filteredData = jsonData.filter(row => row.length > 0 && row.some(cell => cell !== null && String(cell).trim() !== ''));
+
+                    if (filteredData.length === 0) {
+                        throw new Error("File Excel tidak berisi data atau formatnya salah.");
+                    }
+
+                    // Pastikan setiap baris memiliki 5 kolom sesuai format
+                    const validatedData = filteredData.map(row => {
+                        let newRow = [...row];
+                        while(newRow.length < 5) {
+                            newRow.push(''); // Tambahkan sel kosong jika kurang
+                        }
+                        return newRow.slice(0, 5); // Ambil 5 kolom pertama saja
+                    });
+
+
+                    uploadStatus.textContent = `Mengunggah ${validatedData.length} data siswa...`;
+
+                    const payload = {
+                        action: 'uploadSiswaExcel',
+                        data: validatedData
+                    };
+
+                    fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                        .then(response => response.json())
+                        .then(res => {
+                            if (res.status === 'success') {
+                                closeModal('uploadModal');
+                                showMessage(res.message, 'Upload Berhasil');
+                                loadAllUserData();
+                            } else {
+                                throw new Error(res.message);
+                            }
+                        })
+                        .catch(error => {
+                            uploadStatus.textContent = '';
+                            showMessage(`Gagal mengunggah: ${error.message}`, 'Error');
+                        })
+                        .finally(() => {
+                            uploadButton.disabled = false;
+                            uploadStatus.innerHTML = '';
+                            fileInput.value = '';
+                        });
+
+                } catch (error) {
+                    uploadButton.disabled = false;
+                    uploadStatus.textContent = '';
+                    showMessage(`Terjadi kesalahan saat membaca file: ${error.message}`, 'Error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function loadGlobalSettings() {
+            const schoolContainer = document.getElementById('schoolInfoContainer');
+            schoolContainer.innerHTML = "<p>Memuat data sekolah dan pengaturan...</p>";
+            fetch(`${scriptURL}?action=getGlobalSettings`)
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        globalSettings = res.data;
+                        
+                        const info = globalSettings.schoolInfo;
+                        const logoUrl = info['Url Logo Sekolah'] || '';
+                        schoolContainer.innerHTML = `
+                            <div class="info-item"><div class="info-label">Nama Sekolah</div>: ${info['NAMA Sekolah'] || ''}</div>
+                            <div class="info-item"><div class="info-label">NPSN</div>: ${info['NPSN'] || ''}</div>
+                            <div class="info-item"><div class="info-label">Alamat</div>: ${info['Alamat'] || ''}</div>
+                            <div class="info-item"><div class="info-label">Jenjang</div>: ${info['Jenjang'] || ''}</div>
+                            <div class="info-item"><div class="info-label">Nama Kepala Sekolah</div>: ${info['Nama Kepala Sekolah'] || ''}</div>
+                            <div class="info-item"><div class="info-label">NIP Kepala Sekolah</div>: ${info['NIP Kepala Sekolah'] || ''}</div>
+                            <div class="info-item"><div class="info-label">Nomor HP Admin</div>: ${info['Nomor HP Admin'] || ''}</div>
+                            <div class="info-item"><div class="info-label">Logo</div>: <img src="${logoUrl}" alt="Logo Sekolah" class="info-logo" onerror="this.style.display='none'"></div>
+                        `;
+
+                        const predikat = globalSettings.predikat;
+                        document.getElementById('predikatTaatText').value = predikat.taatText || '';
+                        document.getElementById('predikatTaatValue').value = predikat.taatValue || '';
+                        document.getElementById('predikatTerbiasaText').value = predikat.terbiasaText || '';
+                        document.getElementById('predikatTerbiasaValue').value = predikat.terbiasaValue || '';
+                        document.getElementById('predikatKurangText').value = predikat.kurangText || '';
+
+                        const waktu = globalSettings.waktu;
+                        if (waktu) {
+                            document.getElementById('batasBangunPagi').value = waktu.bangunPagi || '05:00';
+                            document.getElementById('batasTidurCepat').value = waktu.tidurCepat || '21:00';
+                        }
+                        
+                        const ibadahContainer = document.getElementById('ibadahSettingsContainer');
+                        ibadahContainer.innerHTML = '';
+                        const ibadahSettings = globalSettings.ibadah.settings || [];
+                        for (let i = 0; i < 7; i++) {
+                            const isChecked = ibadahSettings[i] === true ? 'checked' : '';
+                            const div = document.createElement('div');
+                            div.innerHTML = `
+                                <input type="checkbox" id="ibadahCheck${i+1}" ${isChecked}>
+                                <label for="ibadahCheck${i+1}">Ibadah ${i+1}</label>
+                            `;
+                            ibadahContainer.appendChild(div);
+                        }
+                    } else {
+                        showMessage('Gagal memuat pengaturan global: ' + res.message, 'Error');
+                        schoolContainer.innerHTML = `<p style="color:red;">Gagal memuat pengaturan.</p>`;
+                    }
+                })
+                .catch(error => {
+                    showMessage(`Error Jaringan: ${error.message}`, 'Error');
+                    schoolContainer.innerHTML = `<p style="color:red;">Gagal memuat pengaturan.</p>`;
+                });
+        }
+
+        function savePredikatSettings() {
+            const payload = {
+                action: 'updateSettings',
+                values: {
+                    predikat: {
+                        taatText: document.getElementById('predikatTaatText').value,
+                        taatValue: document.getElementById('predikatTaatValue').value,
+                        terbiasaText: document.getElementById('predikatTerbiasaText').value,
+                        terbiasaValue: document.getElementById('predikatTerbiasaValue').value,
+                        kurangText: document.getElementById('predikatKurangText').value,
+                    }
+                }
+            };
+            sendSettingsUpdate(payload, 'Pengaturan predikat berhasil disimpan!');
+        }
+
+        function saveIbadahSettings() {
+            const settingsArray = [];
+            for (let i = 1; i <= 7; i++) {
+                const isChecked = document.getElementById(`ibadahCheck${i}`).checked;
+                settingsArray.push(isChecked);
+            }
+            const payload = {
+                action: 'updateSettings',
+                values: {
+                    ibadah: {
+                        settings: settingsArray
+                    }
+                }
+            };
+            sendSettingsUpdate(payload, 'Pengaturan ibadah berhasil disimpan!');
+        }
+        
+        function saveWaktuSettings() {
+            const payload = {
+                action: 'updateSettings',
+                values: {
+                    waktu: {
+                        bangunPagi: document.getElementById('batasBangunPagi').value,
+                        tidurCepat: document.getElementById('batasTidurCepat').value,
+                    }
+                }
+            };
+            sendSettingsUpdate(payload, 'Pengaturan waktu berhasil disimpan!');
+        }
+
+        function sendSettingsUpdate(payload, successMessage) {
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        showMessage(successMessage, 'Sukses');
+                        loadGlobalSettings();
+                    } else { throw new Error(res.message); }
+                })
+                .catch(error => showMessage(`Gagal menyimpan: ${error.message}`, 'Error'));
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            sessionStorage.clear();
+            showMessage('Anda telah berhasil logout.', 'Logout Berhasil', 'alert', () => {
+                window.location.href = './';
+            });
+        });
+
+        function showMessage(message, title = 'Pemberitahuan', type = 'alert', onConfirm = null) {
+            const messageModal = document.getElementById('messageModal');
+            document.getElementById('messageModalTitle').textContent = title;
+            document.getElementById('messageModalText').textContent = message;
+            const buttonsDiv = document.getElementById('messageModalButtons');
+            buttonsDiv.innerHTML = '';
+            
+            if (type === 'confirm') {
+                const yesButton = document.createElement('button');
+                yesButton.textContent = 'Ya, Lanjutkan';
+                yesButton.className = 'btn-delete';
+                yesButton.onclick = () => { if (onConfirm) onConfirm(); closeModal('messageModal'); };
+                buttonsDiv.appendChild(yesButton);
+
+                const noButton = document.createElement('button');
+                noButton.textContent = 'Batal';
+                noButton.style.backgroundColor = '#6c757d';
+                noButton.onclick = () => closeModal('messageModal');
+                buttonsDiv.appendChild(noButton);
+            } else {
+                const okButton = document.createElement('button');
+                okButton.textContent = 'OK';
+                okButton.style.backgroundColor = '#007bff';
+                okButton.onclick = () => { if (onConfirm) onConfirm(); closeModal('messageModal'); };
+                buttonsDiv.appendChild(okButton);
+            }
+            messageModal.style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.animation = 'fadeOut 0.3s';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.style.animation = '';
+            }, 290);
+        }
+        
+        window.onclick = event => {
+            if (event.target == formModal) closeModal('formModal');
+            if (event.target == messageModal) closeModal('messageModal');
+            if (event.target == uploadModal) closeModal('uploadModal');
+        }
+
+        function togglePasswordVisibility(inputId, iconElement) {
+            const passwordInput = document.getElementById(inputId);
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            iconElement.innerHTML = type === 'password' 
+                ? `<i class="fas fa-eye"></i>` 
+                : `<i class="fas fa-eye-slash"></i>`;
+        }
+
+        function openTab(evt, tabName) {
+            let i, content, tabButtons;
+            content = document.getElementsByClassName("content");
+            for (i = 0; i < content.length; i++) content[i].style.display = "none";
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) tabButtons[i].className = tabButtons[i].className.replace(" active", "");
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            
+            if (tabName === 'rekapKelas' && !document.getElementById('tabelRekapKelas').dataset.loaded) {
+                loadRekapKelasData();
+            }
+        }
+        
+        function calculatePredicate(percentage) {
+            const settings = globalSettings.predikat;
+            if (!settings || settings.taatValue === undefined) return "N/A";
+            if (percentage > settings.taatValue) return settings.taatText;
+            if (percentage > settings.terbiasaValue) return settings.terbiasaText;
+            return settings.kurangText;
+        }
+
+        function loadRekapKelasData() {
+            const tableBody = document.getElementById('tabelRekapKelas').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Memuat data rekapitulasi...</td></tr>`;
+
+            fetch(`${scriptURL}?action=getPercentageRekap`)
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status !== 'success') throw new Error(res.message);
+
+                    rawRekapData = res.data; 
+                    const allClassPercentages = rawRekapData;
+                    tableBody.innerHTML = '';
+                    document.getElementById('tabelRekapKelas').dataset.loaded = 'true';
+                    
+                    if (rekapChartInstances.length > 0) {
+                        rekapChartInstances.forEach(chart => chart.destroy());
+                        rekapChartInstances = [];
+                    }
+
+                    if (Object.keys(allClassPercentages).length === 0) {
+                         tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;">Belum ada data laporan di kelas manapun.</td></tr>`;
+                         renderSchoolRekap(rawRekapData);
+                         renderRekapChart(rawRekapData);
+                         return;
+                    }
+
+                    for (const className in allClassPercentages) {
+                        const percentages = allClassPercentages[className];
+                        const row = tableBody.insertRow();
+                        
+                        row.insertCell().textContent = className;
+                        row.insertCell().textContent = calculatePredicate(percentages.beribadah);
+                        row.insertCell().textContent = calculatePredicate(percentages.tidurCepat);
+                        row.insertCell().textContent = calculatePredicate(percentages.bangunPagi);
+                        row.insertCell().textContent = calculatePredicate(percentages.olahraga);
+                        row.insertCell().textContent = calculatePredicate(percentages.belajar);
+                        row.insertCell().textContent = calculatePredicate(percentages.makanBergizi);
+                        row.insertCell().textContent = calculatePredicate(percentages.bermasyarakat);
+                    }
+                    
+                    renderSchoolRekap(rawRekapData);
+                    renderRekapChart(rawRekapData);
+                })
+                .catch(error => {
+                    console.error('Error loading rekap data:', error);
+                    tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red;">Gagal memuat data: ${error.message}</td></tr>`;
+                });
+        }
+        
+        function renderSchoolRekap(rekapData) {
+            const container = document.getElementById('schoolRekapContainer');
+            container.innerHTML = '';
+
+            const classCount = Object.keys(rekapData).length;
+            if (classCount === 0) {
+                return;
+            }
+
+            const averages = {
+                beribadah: 0, tidurCepat: 0, bangunPagi: 0,
+                olahraga: 0, belajar: 0, makanBergizi: 0, bermasyarakat: 0
+            };
+            const keys = Object.keys(averages);
+            
+            for (const className in rekapData) {
+                for (const key of keys) {
+                    averages[key] += rekapData[className][key];
+                }
+            }
+            for (const key of keys) {
+                averages[key] = averages[key] / classCount;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'settings-card';
+            const canvasId = `schoolRekapChart`;
+            card.innerHTML = `
+                <h3 style="text-align:center; margin-bottom: 15px;"><i class="fas fa-school" style="margin-right: 8px;"></i> Rata-Rata Sekolah</h3>
+                <div style="position: relative; height: 250px;">
+                    <canvas id="${canvasId}"></canvas>
+                </div>
+            `;
+            container.appendChild(card);
+            
+            const categories = ["Beribadah", "Tidur Cepat", "Bangun Pagi", "Olah Raga", "Belajar", "Makan Bergizi", "Bermasyarakat"];
+            const averageData = keys.map(key => averages[key].toFixed(1));
+
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const newChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Persentase Rata-Rata',
+                        data: averageData,
+                        backgroundColor: 'rgba(40, 167, 69, 0.6)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    layout: { padding: { right: 35 } },
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { display: false } },
+                        y: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'right',
+                            formatter: (value) => value + '%',
+                            color: '#333',
+                            font: { weight: 'bold' }
+                        }
+                    }
+                }
+            });
+            rekapChartInstances.push(newChart);
+        }
+
+        function renderRekapChart(rekapData) {
+            const chartContainer = document.getElementById('rekapChartContainer');
+            chartContainer.innerHTML = ''; 
+
+            const classNames = Object.keys(rekapData);
+            if (classNames.length === 0) {
+                chartContainer.innerHTML = '<p>Data grafik tidak tersedia karena belum ada laporan yang masuk.</p>';
+                return; 
+            }
+
+            const categories = ["Beribadah", "Tidur Cepat", "Bangun Pagi", "Olah Raga", "Belajar", "Makan Bergizi", "Bermasyarakat"];
+            const dataKeys = ["beribadah", "tidurCepat", "bangunPagi", "olahraga", "belajar", "makanBergizi", "bermasyarakat"];
+            
+            for (const className in rekapData) {
+                const card = document.createElement('div');
+                card.className = 'settings-card';
+                const canvasId = `chart-${className.replace(/\s+/g, '-')}`;
+                card.innerHTML = `
+                    <h3 style="text-align:center; margin-bottom: 15px;"><i class="fas fa-chart-bar" style="margin-right: 8px;"></i> ${className}</h3>
+                    <div style="position: relative; height: 250px;">
+                        <canvas id="${canvasId}"></canvas>
+                    </div>
+                `;
+                chartContainer.appendChild(card);
+                
+                const classData = dataKeys.map(key => rekapData[className][key].toFixed(1));
+
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                const newChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: categories,
+                        datasets: [{
+                            label: 'Persentase',
+                            data: classData,
+                            backgroundColor: 'rgba(0, 123, 255, 0.6)',
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            borderWidth: 1,
+                            borderRadius: 5,
+                        }]
+                    },
+                    options: {
+                        layout: { padding: { right: 35 } },
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { beginAtZero: true, max: 100, ticks: { display: false }, grid: { display: false } },
+                            y: { grid: { display: false } }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: false },
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'right',
+                                formatter: (value) => value + '%',
+                                color: '#333',
+                                font: { weight: 'bold' }
+                            }
+                        }
+                    }
+                });
+                rekapChartInstances.push(newChart);
+            }
+        }
+
+        function showSchoolModal() {
+            formTypeInput.value = 'schoolInfo';
+            modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Informasi Sekolah';
+            const data = globalSettings.schoolInfo;
+            if(!data) {
+                showMessage('Data sekolah belum dimuat, silakan coba lagi.', 'Peringatan');
+                return;
+            }
+
+            formFields.innerHTML = `
+                <div class="form-group"><label>Nama Sekolah</label><input type="text" id="nama_sekolah" data-key="NAMA Sekolah" value="${data['NAMA Sekolah'] || ''}"></div>
+                <div class="form-group"><label>NPSN</label><input type="text" id="npsn" data-key="NPSN" value="${data['NPSN'] || ''}"></div>
+                <div class="form-group"><label>Alamat</label><input type="text" id="alamat" data-key="Alamat" value="${data['Alamat'] || ''}"></div>
+                <div class="form-group"><label>Jenjang</label><input type="text" id="jenjang" data-key="Jenjang" value="${data['Jenjang'] || ''}"></div>
+                <div class="form-group"><label>URL Logo Sekolah</label><input type="text" id="url_logo" data-key="Url Logo Sekolah" value="${data['Url Logo Sekolah'] || ''}"></div>
+                <div class="form-group"><label>Nama Kepala Sekolah</label><input type="text" id="nama_kepsek" data-key="Nama Kepala Sekolah" value="${data['Nama Kepala Sekolah'] || ''}"></div>
+                <div class="form-group"><label>NIP Kepala Sekolah</label><input type="text" id="nip_kepsek" data-key="NIP Kepala Sekolah" value="${data['NIP Kepala Sekolah'] || ''}"></div>
+                <div class="form-group"><label>Nomor HP Admin</label><input type="text" id="no_hp_admin" data-key="Nomor HP Admin" value="${data['Nomor HP Admin'] || ''}"></div>
+            `;
+            formModal.style.display = 'block';
+        }
+
+        function loadAllUserData() {
+            fetch(`${scriptURL}?action=readAll`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        allAdminGuruData = data.adminGuru.map((row, index) => ({ data: row, originalIndex: index + 2 }));
+                        allSiswaData = data.siswa.map((row, index) => ({ data: row, originalIndex: index + 2 }));
+
+                        populateTable('tabelAdminGuru', allAdminGuruData);
+                        populateTable('tabelSiswa', allSiswaData);
+                        populateKelasFilter();
+                    }
+                })
+                .catch(error => console.error('Error loading user data:', error));
+        }
+
+        function populateKelasFilter() {
+            const filterKelas = document.getElementById('filterKelas');
+            const kelasSet = new Set(allSiswaData.map(item => item.data[4]).filter(Boolean));
+            
+            while (filterKelas.options.length > 1) { filterKelas.remove(1); }
+
+            [...kelasSet].sort().forEach(kelas => {
+                const option = new Option(kelas, kelas);
+                filterKelas.add(option);
+            });
+        }
+
+        function filterSiswa() {
+            const searchNamaValue = document.getElementById('searchNama').value.toLowerCase();
+            const filterKelasValue = document.getElementById('filterKelas').value;
+
+            const filteredData = allSiswaData.filter(item => {
+                const namaMatch = item.data[2].toLowerCase().includes(searchNamaValue);
+                const kelasMatch = !filterKelasValue || item.data[4] === filterKelasValue;
+                return namaMatch && kelasMatch;
+            });
+            populateTable('tabelSiswa', filteredData);
+        }
+
+        function populateTable(tableId, dataArray) {
+            const tableBody = document.getElementById(tableId).getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+            if (dataArray.length === 0) {
+                const colCount = document.getElementById(tableId).rows[0].cells.length;
+                tableBody.innerHTML = `<tr><td colspan="${colCount}" style="text-align: center; padding: 20px;">Tidak ada data yang ditemukan.</td></tr>`;
+                return;
+            }
+            dataArray.forEach(item => {
+                const row = tableBody.insertRow();
+                item.data.forEach(cellData => row.insertCell().textContent = cellData);
+                const actionCell = row.insertCell();
+                actionCell.innerHTML = `<button class="btn-edit" onclick="editData('${tableId}', ${item.originalIndex})"><i class="fas fa-pencil-alt"></i></button><button class="btn-delete" onclick="deleteData('${tableId}', ${item.originalIndex})"><i class="fas fa-trash"></i></button>`;
+            });
+        }
+
+        function showUserModal(type, rowIndex = null, data = []) {
+            formTypeInput.value = type;
+            rowIndexInput.value = rowIndex || '';
+            formFields.innerHTML = '';
+            if (type === 'adminGuru') {
+                modalTitle.innerHTML = rowIndex ? '<i class="fas fa-user-edit"></i> Edit Data Admin/Guru' : '<i class="fas fa-user-plus"></i> Tambah Data Admin/Guru';
+                formFields.innerHTML = `
+                    <div class="form-group"><label>ID</label><input type="text" id="field1" value="${data[0] || ''}" required></div>
+                    <div class="form-group"><label>Username</label><input type="text" id="field2" value="${data[1] || ''}" required></div>
+                    <div class="form-group"><label>NIP/Password</label><div class="password-wrapper"><input type="password" id="field3" value="${data[2] || ''}" required><span class="toggle-password" onclick="togglePasswordVisibility('field3', this)"><i class="fas fa-eye"></i></span></div></div>
+                    <div class="form-group"><label>Nama Guru</label><input type="text" id="field4" value="${data[3] || ''}" required></div>
+                    <div class="form-group"><label>Role</label><select id="field5"><option value="Admin" ${data[4] === 'Admin' ? 'selected' : ''}>Admin</option><option value="Guru" ${data[4] === 'Guru' ? 'selected' : ''}>Guru</option></select></div>
+                    <div class="form-group"><label>Kelas</label><input type="text" id="field6" value="${data[5] || ''}"></div>
+                `;
+            } else if (type === 'siswa') {
+                modalTitle.innerHTML = rowIndex ? '<i class="fas fa-user-edit"></i> Edit Data Siswa' : '<i class="fas fa-user-plus"></i> Tambah Data Siswa';
+                const lastNo = allSiswaData.length > 0 ? Math.max(...allSiswaData.map(item => parseInt(item.data[0]) || 0)) : 0;
+                const noUrut = data[0] || (lastNo + 1);
+
+                const agamaOptions = ['Islam', 'Kristen', 'Katholik', 'Hindu', 'Budha', 'Konghucu', 'Kepercayaan'];
+                let agamaDropdownHTML = agamaOptions.map(agama => `<option value="${agama}" ${data[3] === agama ? 'selected' : ''}>${agama}</option>`).join('');
+
+                const kelasSet = new Set(allAdminGuruData.map(item => item.data[5]).filter(Boolean));
+                let kelasDropdownHTML = [...kelasSet].sort().map(kelas => `<option value="${kelas}" ${data[4] === kelas ? 'selected' : ''}>${kelas}</option>`).join('');
+
+                formFields.innerHTML = `
+                    <div class="form-group"><label>No</label><input type="text" id="field1" value="${noUrut}" required readonly></div>
+                    <div class="form-group"><label>Induk</label><input type="text" id="field2" value="${data[1] || ''}" required></div>
+                    <div class="form-group"><label>Nama Siswa</label><input type="text" id="field3" value="${data[2] || ''}" required></div>
+                    <div class="form-group"><label>Agama</label><select id="field4" required>${agamaDropdownHTML}</select></div>
+                    <div class="form-group"><label>Kelas</label><select id="field5" required><option value="">Pilih Kelas</option>${kelasDropdownHTML}</select></div>
+                `;
+            }
+            formModal.style.display = 'block';
+        }
+
+        dataForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Menyimpan...';
+
+            const type = formTypeInput.value;
+            let payload;
+
+            if (type === 'schoolInfo') {
+                const values = {};
+                formFields.querySelectorAll('input, select').forEach(input => {
+                    if (input.dataset.key) { values[input.dataset.key] = input.value; }
+                });
+                payload = { action: 'updateSchoolInfo', values };
+            } else {
+                const rowIndex = rowIndexInput.value;
+                const fieldCount = type === 'adminGuru' ? 6 : (type === 'siswa' ? 5 : 0);
+                const values = Array.from({length: fieldCount}, (_, i) => document.getElementById(`field${i+1}`).value);
+                const action = rowIndex ? 'update' : 'create';
+                payload = { action, type, values };
+                if (rowIndex) payload.rowIndex = rowIndex;
+            }
+
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(response => response.json())
+                .then(result => {
+                    closeModal('formModal');
+                    if(result.status === 'success') {
+                        showMessage('Data berhasil disimpan!', 'Sukses', 'alert', () => {
+                            if (type === 'schoolInfo') loadGlobalSettings();
+                            else loadAllUserData();
+                        });
+                    } else { throw new Error(result.message); }
+                })
+                .catch(error => showMessage(`Gagal menyimpan: ${error.message}`, 'Error'))
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = '<i class="fas fa-save"></i> Simpan';
+                });
+        });
+
+        function editData(tableId, rowIndex) {
+            const type = tableId === 'tabelAdminGuru' ? 'adminGuru' : 'siswa';
+            const dataArray = type === 'adminGuru' ? allAdminGuruData : allSiswaData;
+            const itemToEdit = dataArray.find(item => item.originalIndex === rowIndex);
+            
+            if (itemToEdit) {
+                showUserModal(type, rowIndex, itemToEdit.data);
+            } else {
+                showMessage('Gagal menemukan data untuk diedit.', 'Error');
+            }
+        }
+
+        function deleteData(tableId, rowIndex) {
+            const type = tableId === 'tabelAdminGuru' ? 'adminGuru' : 'siswa';
+            showMessage('Apakah Anda yakin ingin menghapus data ini?', 'Konfirmasi Hapus', 'confirm', () => {
+                const payload = { action: 'delete', type, rowIndex };
+                fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 'success') {
+                            showMessage('Data berhasil dihapus!', 'Sukses', 'alert', loadAllUserData);
+                        } else { throw new Error(result.message); }
+                    })
+                    .catch(error => showMessage(`Terjadi kesalahan: ${error.message}`, 'Error'));
+            });
+        }
+    </script>
+</body>
+
+</html>

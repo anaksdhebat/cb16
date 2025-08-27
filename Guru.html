@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="http://lh3.googleusercontent.com/d/18n1lhoim4A9UBJw3KfXlYiHcKdqQI7JI">
+    <title>GURU</title>
+    
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #007bff; --secondary-color: #6c757d; --success-color: #28a745;
+            --danger-color: #dc3545; --warning-color: #ffc107; --info-color: #17a2b8;
+            --light-color: #f8f9fa; --dark-color: #343a40; --background-color: #f4f7f6;
+            --text-color: #333; --card-bg-color: #ffffff; --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; overflow-x: hidden; }
+        .header { background: linear-gradient(90deg, var(--primary-color), var(--info-color)); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15); }
+        .header h1 { font-size: 26px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        #logoutButton { background-color: rgba(255, 255, 255, 0.2); color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s ease-in-out; border: 1px solid transparent; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        #logoutButton:hover { background-color: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 6px 8px rgba(0,0,0,0.15); }
+        #logoutButton:active { transform: translateY(1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .container { padding: 30px; }
+        .card { background-color: var(--card-bg-color); padding: 25px; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        h2 { color: var(--dark-color); border-bottom: 3px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 25px; font-size: 22px; }
+        #nama-kelas { color: var(--primary-color); font-weight: 700; }
+        .view-controls { display: flex; flex-wrap: wrap; gap: 15px; align-items: center; margin-bottom: 25px; }
+        .view-switcher { display: flex; flex-wrap: wrap; gap: 10px; }
+        .btn, .action-btn { padding: 10px 18px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; font-family: 'Poppins', sans-serif; border-radius: 8px; transition: all 0.2s ease-out; box-shadow: 0 3px 0 #ccc; position: relative; color: var(--text-color); background-color: #e9ecef; border-bottom: 4px solid #ced4da; }
+        .btn:hover, .action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #b7bcc1; }
+        .btn:active, .action-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #b7bcc1; border-bottom-width: 2px; }
+        .btn.active { background-color: var(--primary-color); color: white; border-bottom-color: #0056b3; box-shadow: 0 3px 0 #0056b3; }
+        .action-btn.edit { background-color: var(--success-color); color: white; border-bottom-color: #1c7430; box-shadow: 0 3px 0 #1c7430;}
+        .action-btn.delete { background-color: var(--danger-color); color: white; border-bottom-color: #b02a37; box-shadow: 0 3px 0 #b02a37;}
+        .action-btn.download { background-color: var(--info-color); color: white; border-bottom-color: #117a8b; box-shadow: 0 3px 0 #117a8b;}
+        .btn i, .action-btn i { margin-right: 8px; }
+        .search-wrapper { position: relative; margin-left: auto; }
+        #searchSiswaInput { padding: 10px 15px 10px 40px; border: 2px solid #ddd; font-size: 14px; border-radius: 20px; transition: all 0.3s; width: 250px; }
+        #searchSiswaInput:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); }
+        .search-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; }
+        .table-wrapper { max-height: 65vh; overflow: auto; border: 1px solid #ddd; border-radius: var(--border-radius); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 18px; border-bottom: 1px solid #ddd; text-align: left; white-space: nowrap; }
+        th { background-color: var(--dark-color); color: white; position: sticky; top: 0; z-index: 2; font-weight: 600; }
+        tfoot { position: sticky; bottom: 0; z-index: 2; }
+        tfoot td { background-color: var(--dark-color); color: white; font-weight: 600; border-top: 2px solid var(--primary-color); }
+        tbody tr { transition: background-color: 0.3s; }
+        tbody tr:nth-child(even) { background-color: #f8f9fa; }
+        tbody tr:hover { background-color: #e9ecef; }
+        .loader-container { text-align: center; padding: 50px; }
+        .loader { border: 8px solid #f3f3f3; border-top: 8px solid var(--primary-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background-color: var(--card-bg-color); padding: 30px; border-radius: var(--border-radius); width: 90%; max-width: 800px; box-shadow: var(--shadow); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { margin: 0; font-size: 20px; color: var(--primary-color); }
+        .modal-header .close { color: #aaa; font-size: 32px; font-weight: bold; cursor: pointer; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 8px; }
+        #edit-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-height: 50vh; overflow-y: auto; padding-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-chalkboard-teacher"></i> Dashboard Guru</h1>
+        <a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Data Laporan Siswa Kelas: <span id="nama-kelas"></span></h2>
+            
+            <div class="view-controls">
+                <div class="view-switcher">
+                    <button id="btnData" class="btn active" onclick="switchView('data', this)"><i class="fas fa-table"></i> Data Asli</button>
+                    <button id="btnNilai" class="btn" onclick="switchView('nilai', this)"><i class="fas fa-star-half-alt"></i> Nilai Harian</button>
+                    <button id="btnRekap" class="btn" onclick="switchView('rekap', this)"><i class="fas fa-chart-pie"></i> Rekap Kategori</button>
+                    <button id="btnPredikat" class="btn" onclick="switchView('predikat', this)"><i class="fas fa-award"></i> Rekap Predikat</button>
+                    <button class="action-btn download" onclick="downloadRekapPDF()"><i class="fas fa-file-pdf"></i> Download Laporan</button>
+                </div>
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchSiswaInput" onkeyup="filterTable()" placeholder="Cari Nama Siswa...">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="laporanSiswaTable">
+                    <thead></thead>
+                    <tbody></tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="messageModal" class="modal">
+         <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="messageModalTitle"></h3>
+                <span class="close" onclick="closeModal('messageModal')">&times;</span>
+            </div>
+            <p id="messageModalText"></p>
+            <div id="messageModalButtons" style="margin-top: 20px; text-align: right;">
+                <button class="btn" onclick="closeModal('messageModal')">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-pencil-alt"></i> Edit Laporan Siswa</h3>
+                <span class="close" onclick="closeModal('editModal')">&times;</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editRowIndex">
+                <div id="edit-form-grid"></div>
+                <div style="text-align: right; margin-top: 20px;">
+                    <button type="button" class="action-btn edit" onclick="saveChanges()"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz9PNU-dfHJc41xpR1AbNZFP55_YZ7vwnHIHzbFYOAulObbyVOLfr3UygydWVrWl8PR/exec';
+        const namaKelasSpan = document.getElementById('nama-kelas');
+        const tableHead = document.querySelector("#laporanSiswaTable thead");
+        const tableBody = document.querySelector("#laporanSiswaTable tbody");
+        const tableFoot = document.querySelector("#laporanSiswaTable tfoot");
+        
+        let fullData = [];
+        let activeView = 'data';
+        let onModalConfirm = null;
+        let schoolInfo = {};
+        let predikatSettings = {};
+        let ibadahSettings = [];
+        let ibadahThreshold = 5;
+        
+        let batasBangunPagi = '05:00'; // Nilai default
+        let batasTidurCepat = '21:00';  // Nilai default
+
+        function showLoader() {
+            tableHead.innerHTML = "";
+            tableBody.innerHTML = `<tr><td colspan="20"><div class="loader-container"><div class="loader"></div><p>Memuat data...</p></div></td></tr>`;
+            tableFoot.innerHTML = "";
+        }
+
+        function showMessage(message, title = 'Pemberitahuan', onConfirm = null) {
+            document.getElementById('messageModalTitle').textContent = title;
+            document.getElementById('messageModalText').textContent = message;
+            onModalConfirm = onConfirm;
+            document.getElementById('messageModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('show');
+            if (modalId === 'messageModal' && onModalConfirm) {
+                onModalConfirm();
+                onModalConfirm = null; 
+            }
+        }
+        
+        if (sessionStorage.getItem('isGuruLoggedIn') !== 'true') {
+            showMessage('Anda harus login sebagai Guru untuk mengakses halaman ini.', 'Akses Ditolak', () => { window.location.href = './'; });
+        }
+        
+        window.onload = function() {
+            if (sessionStorage.getItem('isGuruLoggedIn') !== 'true') return;
+
+            const namaKelas = sessionStorage.getItem('guruKelas');
+            if (!namaKelas) {
+                namaKelasSpan.textContent = "Tidak Ditemukan";
+                tableBody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:red;">Gagal memuat data: Tidak ada informasi kelas.</td></tr>`;
+                return;
+            }
+            
+            namaKelasSpan.textContent = namaKelas;
+            showLoader();
+
+            const fetchGlobalSettings = fetch(`${scriptURL}?action=getGlobalSettings`).then(response => response.json());
+            const fetchKelasData = fetch(`${scriptURL}?action=getKelasData&kelas=${namaKelas}`).then(response => response.json());
+
+            Promise.all([fetchGlobalSettings, fetchKelasData])
+                .then(responses => {
+                    const settingsResponse = responses[0];
+                    const kelasResponse = responses[1];
+                    
+                    if (settingsResponse.status === 'success') {
+                        schoolInfo = settingsResponse.data.schoolInfo;
+                        predikatSettings = settingsResponse.data.predikat;
+                        ibadahSettings = settingsResponse.data.ibadah.settings || [];
+                        ibadahThreshold = ibadahSettings.filter(setting => setting === true).length;
+                        if (ibadahThreshold === 0) ibadahThreshold = 1;
+
+                        if (settingsResponse.data.waktu) {
+                            batasBangunPagi = settingsResponse.data.waktu.bangunPagi || '05:00';
+                            batasTidurCepat = settingsResponse.data.waktu.tidurCepat || '21:00';
+                        }
+                    } else {
+                        console.error("Gagal memuat pengaturan global:", settingsResponse.message);
+                        showMessage('Gagal memuat pengaturan dari Admin, standar default akan digunakan.', 'Peringatan');
+                    }
+                    
+                    if (kelasResponse.status === 'success') {
+                        fullData = kelasResponse.data;
+                        const defaultButton = document.querySelector('.view-switcher .btn');
+                        switchView('data', defaultButton);
+                    } else {
+                        throw new Error(kelasResponse.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    tableBody.innerHTML = `<tr><td colspan="20" style="text-align:center; color:red;">Gagal memuat data: ${error.message}</td></tr>`;
+                });
+        };
+
+        function filterTable() {
+            const searchTerm = document.getElementById('searchSiswaInput').value.toLowerCase();
+            const rows = tableBody.getElementsByTagName('tr');
+            const nameColumnIndex = (activeView === 'data') ? 1 : (activeView === 'nilai' || activeView === 'predikat' || activeView === 'rekap') ? 0 : 1;
+            for (let i = 0; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[nameColumnIndex];
+                if (nameCell) {
+                    const name = nameCell.textContent || nameCell.innerText;
+                    if (name.toLowerCase().indexOf(searchTerm) > -1) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+        
+        function switchView(viewType, clickedButton) {
+            document.querySelectorAll('.view-switcher .btn').forEach(btn => btn.classList.remove('active'));
+            clickedButton.classList.add('active');
+            activeView = viewType;
+            populateTable(viewType);
+            filterTable(); 
+        }
+
+        function populateTable(viewType) {
+            tableHead.innerHTML = "";
+            tableBody.innerHTML = "";
+            tableFoot.innerHTML = "";
+            
+            if (fullData.length <= 1) {
+                tableBody.innerHTML = `<tr><td colspan="20" style="text-align:center;">Belum ada data laporan dari siswa.</td></tr>`;
+                return;
+            }
+            
+            if (viewType === 'predikat') {
+                const rekapHeaders = ["Nama Siswa", "Beribadah", "Tidur Cepat", "Bangun Pagi", "Olahraga", "Belajar", "Makan Bergizi", "Bermasyarakat", "Aksi"];
+                const headerRow = document.createElement('tr');
+                rekapHeaders.forEach(text => headerRow.appendChild(document.createElement('th')).textContent = text);
+                tableHead.appendChild(headerRow);
+
+                const rekapData = {};
+                for (let i = 1; i < fullData.length; i++) {
+                    const rowData = fullData[i];
+                    const namaSiswa = rowData[1];
+                    if (!rekapData[namaSiswa]) {
+                        rekapData[namaSiswa] = { totalHari: 0, beribadah: 0, tidurCepat: 0, bangunPagi: 0, olahraga: 0, belajar: 0, makanBergizi: 0, bermasyarakat: 0 };
+                    }
+                    rekapData[namaSiswa].totalHari++;
+
+                    let ibadahPoint = 0;
+                    for(let j = 0; j < 7; j++) { if(ibadahSettings[j] === true && String(rowData[j+3]).trim()) ibadahPoint++; }
+                    if(ibadahThreshold > 0 && ibadahPoint >= ibadahThreshold) rekapData[namaSiswa].beribadah++;
+
+                    if (rowData[11]) { try { const time = new Date(rowData[11]).toTimeString().substring(0,5); if (time <= batasTidurCepat) rekapData[namaSiswa].tidurCepat++; } catch(e){} }
+                    if (rowData[10]) { try { const time = new Date(rowData[10]).toTimeString().substring(0,5); if (time <= batasBangunPagi) rekapData[namaSiswa].bangunPagi++; } catch(e){} }
+                    
+                    if (String(rowData[12]).trim()) rekapData[namaSiswa].olahraga++;
+                    
+                    let belajarPoint = 0;
+                    if(String(rowData[13]).trim()) belajarPoint++;
+                    if(String(rowData[14]).trim()) belajarPoint++;
+                    if(belajarPoint === 2) rekapData[namaSiswa].belajar++;
+
+                    let makanPoint = 0;
+                    if(String(rowData[15]).trim().toLowerCase() === 'ya') makanPoint++;
+                    if(String(rowData[16]).trim().toLowerCase() === 'ya') makanPoint++;
+                    if(String(rowData[17]).trim().toLowerCase() === 'ya') makanPoint++;
+                    if(makanPoint === 3) rekapData[namaSiswa].makanBergizi++;
+                    
+                    if (String(rowData[18]).trim()) rekapData[namaSiswa].bermasyarakat++;
+                }
+
+                for (const nama in rekapData) {
+                    const data = rekapData[nama];
+                    const row = document.createElement('tr');
+                    row.insertCell().textContent = nama;
+                    
+                    const kategoriKeys = ["beribadah", "tidurCepat", "bangunPagi", "olahraga", "belajar", "makanBergizi", "bermasyarakat"];
+                    const predicatesForPdf = {};
+
+                    kategoriKeys.forEach(key => {
+                        let predikat = predikatSettings.kurangText || 'Kurang';
+                        if(data.totalHari > 0) {
+                            const prob = (data[key] / data.totalHari) * 100;
+                            if (prob > (predikatSettings.taatValue || 80)) predikat = predikatSettings.taatText || 'Taat';
+                            else if (prob > (predikatSettings.terbiasaValue || 60)) predikat = predikatSettings.terbiasaText || 'Terbiasa';
+                        }
+                        row.insertCell().textContent = predikat;
+                        predicatesForPdf[key] = predikat;
+                    });
+
+                    const aksiTd = row.insertCell();
+                    const dataString = JSON.stringify(predicatesForPdf);
+                    aksiTd.innerHTML = `<button class="action-btn download" onclick='downloadPDF("${nama.replace(/'/g, "\\'")}", ${dataString})'><i class="fas fa-download"></i> PDF</button>`;
+                    tableBody.appendChild(row);
+                }
+                return;
+            }
+            
+            if (viewType === 'rekap') {
+                const rekapHeaders = ["Nama Siswa", "Tanggal Kegiatan", "Beribadah", "Tidur Cepat", "Bangun Pagi", "Olahraga", "Belajar", "Makan Bergizi", "Bermasyarakat"];
+                const headerRow = document.createElement('tr');
+                rekapHeaders.forEach(text => headerRow.appendChild(document.createElement('th')).textContent = text);
+                tableHead.appendChild(headerRow);
+                
+                const totalScores = { beribadah: 0, tidurCepat: 0, bangunPagi: 0, olahraga: 0, belajar: 0, makanBergizi: 0, bermasyarakat: 0 };
+                let totalEntries = 0;
+
+                for (let i = 1; i < fullData.length; i++) {
+                    const rowData = fullData[i];
+                    const row = document.createElement('tr');
+                    totalEntries++;
+
+                    let ibadahPoint = 0;
+                    for(let j = 0; j < 7; j++) { if(ibadahSettings[j] === true && String(rowData[j+3]).trim()) ibadahPoint++; }
+                    const ibadahScore = (ibadahThreshold > 0 && ibadahPoint >= ibadahThreshold) ? 1 : 0;
+                    totalScores.beribadah += ibadahScore;
+
+                    let tidurCepatScore = 0;
+                    if (rowData[11]) { try { const time = new Date(rowData[11]).toTimeString().substring(0,5); if (time <= batasTidurCepat) tidurCepatScore = 1; } catch(e){} }
+                    totalScores.tidurCepat += tidurCepatScore;
+                    
+                    let bangunPagiScore = 0;
+                    if (rowData[10]) { try { const time = new Date(rowData[10]).toTimeString().substring(0,5); if (time <= batasBangunPagi) bangunPagiScore = 1; } catch(e){} }
+                    totalScores.bangunPagi += bangunPagiScore;
+
+                    const olahragaScore = String(rowData[12]).trim() ? 1 : 0;
+                    totalScores.olahraga += olahragaScore;
+
+                    let belajarPoint = 0;
+                    if(String(rowData[13]).trim()) belajarPoint++;
+                    if(String(rowData[14]).trim()) belajarPoint++;
+                    const belajarScore = (belajarPoint === 2) ? 1 : 0;
+                    totalScores.belajar += belajarScore;
+
+                    let makanPoint = 0;
+                    if(String(rowData[15]).trim().toLowerCase() === 'ya') makanPoint++;
+                    if(String(rowData[16]).trim().toLowerCase() === 'ya') makanPoint++;
+                    if(String(rowData[17]).trim().toLowerCase() === 'ya') makanPoint++;
+                    const makanScore = (makanPoint === 3) ? 1 : 0;
+                    totalScores.makanBergizi += makanScore;
+                    
+                    const masyarakatScore = String(rowData[18]).trim() ? 1 : 0;
+                    totalScores.bermasyarakat += masyarakatScore;
+                    
+                    let tanggalKegiatanFormatted = rowData[2];
+                    try { tanggalKegiatanFormatted = new Date(rowData[2]).toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }); } catch(e){}
+
+                    row.innerHTML = `<td>${rowData[1]}</td><td>${tanggalKegiatanFormatted}</td><td>${ibadahScore}</td><td>${tidurCepatScore}</td><td>${bangunPagiScore}</td><td>${olahragaScore}</td><td>${belajarScore}</td><td>${makanScore}</td><td>${masyarakatScore}</td>`;
+                    tableBody.appendChild(row);
+                }
+
+                if (totalEntries > 0) {
+                    const footerRow = tableFoot.insertRow();
+                    footerRow.innerHTML = `<td colspan="2">PERSENTASE KESUKSESAN</td>`;
+                    const kategoriKeys = ["beribadah", "tidurCepat", "bangunPagi", "olahraga", "belajar", "makanBergizi", "bermasyarakat"];
+                    kategoriKeys.forEach(key => {
+                        const percentage = ((totalScores[key] / totalEntries) * 100).toFixed(1);
+                        footerRow.insertCell().textContent = `${percentage}%`;
+                    });
+                }
+                return;
+            }
+
+            const headerRow = document.createElement('tr');
+            const headers = fullData[0];
+            const startIndex = (viewType === 'nilai') ? 1 : 0;
+
+            for (let i = startIndex; i < headers.length; i++) {
+                headerRow.appendChild(document.createElement('th')).textContent = headers[i];
+            }
+             if (viewType === 'data') {
+                headerRow.appendChild(document.createElement('th')).textContent = "Aksi";
+            }
+            tableHead.appendChild(headerRow);
+            
+            for (let i = 1; i < fullData.length; i++) {
+                const rowData = fullData[i];
+                const row = document.createElement('tr');
+                
+                for (let index = startIndex; index < rowData.length; index++) {
+                    const cellData = rowData[index];
+                    const td = document.createElement('td');
+                    
+                    if (viewType === 'data') {
+                        let formattedData = cellData;
+                        if ((index === 10 || index === 11) && cellData) { try { let date = new Date(cellData); if (!isNaN(date.getTime())) formattedData = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }); } catch (e) {} } 
+                        else if ((index === 0 || index === 2) && cellData) { try { let date = new Date(cellData); if (!isNaN(date.getTime())) formattedData = date.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }); } catch (e) {} }
+                        td.textContent = formattedData;
+                    } else if (viewType === 'nilai') {
+                        let score = 0;
+                        if (index <= 2) {
+                             td.textContent = cellData;
+                             if (index === 2 && cellData) { try { td.textContent = new Date(cellData).toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }); } catch(e){} }
+                        } else if (index >=3 && index <=9) {
+                            if (cellData !== null && String(cellData).trim() !== "" && String(cellData).trim().toLowerCase() !== "tidak" && String(cellData).trim().toLowerCase() !== "berhalangan") score = 1;
+                            td.textContent = score;
+                        } else if (index === 10) {
+                            if (cellData) { try { const time = new Date(cellData).toTimeString().substring(0,5); if (time <= batasBangunPagi) score = 1; } catch(e){} }
+                            td.textContent = score;
+                        } else if (index === 11) {
+                            if (cellData) { try { const time = new Date(cellData).toTimeString().substring(0,5); if (time <= batasTidurCepat) score = 1; } catch(e){} }
+                            td.textContent = score;
+                        } else {
+                            if (cellData !== null && String(cellData).trim() !== "") score = 1;
+                            td.textContent = score;
+                        }
+                    } 
+                    row.appendChild(td);
+                }
+                 if(viewType === 'data') {
+                    const tdAksi = document.createElement('td');
+                    tdAksi.innerHTML = `<button class="action-btn edit" onclick="openEditModal(${i+1})"><i class="fas fa-edit"></i></button> <button class="action-btn delete" onclick="deleteData(${i+1})"><i class="fas fa-trash"></i></button>`;
+                    row.appendChild(tdAksi);
+                }
+                
+                tableBody.appendChild(row);
+            }
+        }
+
+        function downloadPDF(studentName, predicateData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const namaSekolah = schoolInfo['NAMA Sekolah'] || 'Nama Sekolah Tidak Ditemukan';
+            const kelas = sessionStorage.getItem('guruKelas') || '';
+            const tanggalCetak = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            const namaGuru = sessionStorage.getItem('guruName') || 'Guru';
+            const nipGuru = sessionStorage.getItem('guruNip') || 'NIP Tidak Tersedia';
+
+            doc.setFontSize(16);
+            doc.text(namaSekolah, doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text(`Laporan Jurnal 7 Kebiasaan Anak Perkembangan Karakter Siswa`, doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' });
+            doc.setLineWidth(0.5);
+            doc.line(20, 32, 190, 32);
+
+            doc.text(`Nama Siswa: ${studentName}`, 20, 40);
+            doc.text(`Kelas: ${kelas}`, 20, 46);
+            doc.text(`Jakarta, ${tanggalCetak}`, 190, 46, { align: 'right' });
+
+            const tableData = [
+                ['Bangun Pagi', predicateData['bangunPagi'] || 'N/A'], ['Beribadah', predicateData['beribadah'] || 'N/A'],
+                ['Berolahraga', predicateData['olahraga'] || 'N/A'], ['Makan Sehat dan Bergizi', predicateData['makanBergizi'] || 'N/A'],
+                ['Gemar Belajar', predicateData['belajar'] || 'N/A'], ['Bermasyarakat', predicateData['bermasyarakat'] || 'N/A'],
+                ['Tidur Cepat', predicateData['tidurCepat'] || 'N/A']
+            ];
+
+            doc.autoTable({
+                startY: 55, head: [['Dimensi', 'Predikat']], body: tableData,
+                theme: 'grid', headStyles: { fillColor: [52, 58, 64] }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 20;
+            doc.text('TTD Orang Tua Siswa', 30, finalY);
+            doc.text('Guru Kelas', 180, finalY, { align: 'right' });
+
+            doc.text('.....................', 25, finalY + 25);
+            doc.text(namaGuru, 180, finalY + 25, { align: 'right' });
+            doc.text(`NIP. ${nipGuru}`, 180, finalY + 30, { align: 'right' });
+
+            doc.save(`Laporan_${studentName.replace(/ /g, "_")}_${kelas}.pdf`);
+        }
+
+        function downloadRekapPDF() {
+            if (activeView !== 'predikat') {
+                showMessage('Fungsi ini hanya tersedia pada tampilan Rekap Predikat.', 'Informasi');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            const namaSekolah = schoolInfo['NAMA Sekolah'] || 'Nama Sekolah Tidak Ditemukan';
+            const kelas = sessionStorage.getItem('guruKelas') || '';
+            const tanggalCetak = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            const namaGuru = sessionStorage.getItem('guruName') || 'Guru';
+            const nipGuru = sessionStorage.getItem('guruNip') || 'NIP Tidak Tersedia';
+            const page_width = doc.internal.pageSize.getWidth();
+            const namaKepsek = schoolInfo['Nama Kepala Sekolah'] || 'Nama Kepala Sekolah';
+            const nipKepsek = schoolInfo['NIP Kepala Sekolah'] || 'NIP. .......................';
+
+            doc.setFontSize(16); doc.text(namaSekolah, page_width / 2, 20, { align: 'center' });
+            doc.setFontSize(12); doc.text(`Laporan Rekapitulasi Perkembangan Karakter Siswa`, page_width / 2, 28, { align: 'center' });
+            doc.setFontSize(10); doc.text(`Kelas: ${kelas}`, page_width / 2, 34, { align: 'center' });
+            doc.setLineWidth(0.5); doc.line(20, 38, page_width - 20, 38);
+
+            const head = []; const body = [];
+            const table = document.getElementById('laporanSiswaTable');
+            const headerCells = table.querySelectorAll('thead th');
+            const tempHead = [];
+            headerCells.forEach(cell => { if (cell.textContent.toLowerCase() !== 'aksi') tempHead.push(cell.textContent); });
+            head.push(tempHead);
+
+            const rows = table.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const rowData = [];
+                    const cells = row.querySelectorAll('td');
+                    for (let i = 0; i < cells.length - 1; i++) rowData.push(cells[i].textContent);
+                    body.push(rowData);
+                }
+            });
+
+            if (body.length === 0) { showMessage('Tidak ada data untuk diunduh.', 'Informasi'); return; }
+
+            doc.autoTable({ startY: 45, head: head, body: body, theme: 'grid', headStyles: { fillColor: [52, 58, 64] } });
+
+            const finalY = doc.lastAutoTable.finalY + 20; 
+            const leftMargin = 30; const rightMargin = page_width - 30;
+
+            doc.text('Mengetahui,', leftMargin, finalY);
+            doc.text('Kepala Sekolah', leftMargin, finalY + 8);
+            doc.text(namaKepsek, leftMargin, finalY + 32); 
+            doc.text(`NIP. ${nipKepsek}`, leftMargin, finalY + 37);
+            doc.text(`Jakarta, ${tanggalCetak}`, rightMargin, finalY, { align: 'right' });
+            doc.text('Guru Kelas', rightMargin, finalY + 8, { align: 'right' });
+            doc.text(namaGuru, rightMargin, finalY + 32, { align: 'right' });
+            doc.text(`NIP. ${nipGuru}`, rightMargin, finalY + 37, { align: 'right' });
+
+            doc.save(`Laporan_Rekap_Predikat_${kelas.replace(/ /g, "_")}.pdf`);
+        }
+
+        function openEditModal(rowIndexInSheet) {
+            const rowIndexInArray = fullData.findIndex(row => fullData.indexOf(row) === rowIndexInSheet - 1);
+			const arrayIndex = rowIndexInSheet - 1;
+
+			// Validasi untuk memastikan index tidak keluar dari rentang array
+			if (arrayIndex < 1 || arrayIndex >= fullData.length) {
+				console.error("Invalid row index provided:", rowIndexInSheet);
+				showMessage('Indeks data tidak valid, tidak dapat mengedit.', 'Error');
+				return;
+			}
+
+			const formGrid = document.getElementById('edit-form-grid');
+			formGrid.innerHTML = '';
+			const headers = fullData[0];
+			// Ambil data dari array menggunakan index yang sudah benar
+			const data = fullData[arrayIndex];
+			document.getElementById('editRowIndex').value = rowIndexInSheet;
+
+            for(let i = 1; i < headers.length; i++) { 
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+                if (i >= 15 && i <= 17) {
+                    const isChecked = String(data[i]).trim().toLowerCase() === 'ya' ? 'checked' : '';
+                    formGroup.innerHTML = `<input type="checkbox" id="edit-field-${i}" ${isChecked}><label for="edit-field-${i}">${headers[i]}</label>`;
+                } else if (i === 2) {
+                    formGroup.innerHTML = `<label for="edit-field-${i}">${headers[i]}</label><input type="date" id="edit-field-${i}" value="${new Date(data[i]).toISOString().split('T')[0]}">`;
+                } else if (i === 10 || i === 11) {
+                    let timeValue = '';
+                    if (data[i]) { try { timeValue = new Date(data[i]).toTimeString().substring(0,5); } catch(e){} }
+                    formGroup.innerHTML = `<label for="edit-field-${i}">${headers[i]}</label><input type="time" id="edit-field-${i}" value="${timeValue}">`;
+                } else {
+                    formGroup.innerHTML = `<label for="edit-field-${i}">${headers[i]}</label><input type="text" id="edit-field-${i}" value="${data[i] || ''}">`;
+                }
+                formGrid.appendChild(formGroup);
+            }
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function saveChanges() {
+            const rowIndex = document.getElementById('editRowIndex').value;
+            const originalData = fullData[rowIndex - 1]; // Adjust index for array
+            const updatedValues = [originalData[0]]; 
+            
+            for (let i = 1; i < fullData[0].length; i++) {
+                const inputElement = document.getElementById(`edit-field-${i}`);
+                if (i >= 15 && i <= 17) {
+                    updatedValues.push(inputElement.checked ? 'Ya' : '');
+                } else {
+                    updatedValues.push(inputElement.value);
+                }
+            }
+            const payload = { action: 'updateData', kelas: sessionStorage.getItem('guruKelas'), rowIndex: rowIndex, values: updatedValues };
+
+            fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        showMessage('Data berhasil diperbarui!', 'Sukses', () => location.reload());
+                    } else { throw new Error(res.message); }
+                })
+                .catch(error => showMessage(`Gagal menyimpan: ${error.message}`, 'Error'));
+            
+            closeModal('editModal');
+        }
+
+		function deleteData(rowIndex) {
+			// Logika untuk melakukan penghapusan data
+			const performDelete = () => {
+				const payload = { action: 'deleteData', kelas: sessionStorage.getItem('guruKelas'), rowIndex: rowIndex };
+				fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) })
+					.then(response => response.json())
+					.then(res => {
+						if (res.status === 'success') {
+							showMessage('Data berhasil dihapus!', 'Sukses', () => location.reload());
+						} else { throw new Error(res.message); }
+					})
+					.catch(error => showMessage(`Gagal menghapus: ${error.message}`, 'Error'));
+			};
+
+			// Panggil modal konfirmasi
+			showConfirmationModal(
+				'Apakah Anda yakin ingin menghapus data ini secara permanen? Tindakan ini tidak dapat diurungkan.',
+				'Konfirmasi Hapus Data',
+				performDelete // Kirim fungsi performDelete sebagai callback
+			);
+		}
+
+			function showConfirmationModal(message, title, onConfirm) {
+            document.getElementById('messageModalTitle').textContent = title;
+            document.getElementById('messageModalText').textContent = message;
+
+            const buttonContainer = document.getElementById('messageModalButtons');
+            buttonContainer.innerHTML = ''; // Kosongkan tombol yang ada
+
+            // Buat Tombol Konfirmasi (Ya)
+            const confirmBtn = document.createElement('button');
+            confirmBtn.className = 'action-btn delete'; // Beri style merah
+            confirmBtn.innerHTML = '<i class="fas fa-check"></i> Ya, Hapus';
+            confirmBtn.onclick = function() {
+                closeModal('messageModal');
+                if (onConfirm) {
+                    onConfirm(); // Jalankan aksi jika dikonfirmasi
+                }
+            };
+
+            // Buat Tombol Batal
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn';
+            cancelBtn.innerHTML = '<i class="fas fa-times"></i> Batal';
+            cancelBtn.style.marginLeft = '10px';
+            cancelBtn.onclick = function() {
+                closeModal('messageModal');
+            };
+
+            buttonContainer.appendChild(cancelBtn);
+            buttonContainer.appendChild(confirmBtn);
+
+            document.getElementById('messageModal').classList.add('show');
+        }
+
+
+        document.getElementById('logoutButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            sessionStorage.clear();
+            showMessage('Anda telah berhasil logout.', 'Logout', () => { window.location.href = './'; });
+        });
+    </script>
+</body>
+</html>
